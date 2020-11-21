@@ -1,2 +1,2 @@
 # pi-security-cam
-Securiy Camera written in Go that runs on a Raspberry Pi.
+Securiy camera written in Go that runs on a Raspberry Pi.
