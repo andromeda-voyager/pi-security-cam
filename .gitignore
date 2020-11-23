@@ -6,7 +6,7 @@ log.txt
 *.jpg
 
 #config
-settings.go
+config.go
 
 # IDEs and editors
 /.idea
