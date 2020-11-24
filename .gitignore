@@ -8,6 +8,9 @@ log.txt
 #config
 config.go
 
+#keys
+serverKey.pem
+
 # IDEs and editors
 /.idea
 .project

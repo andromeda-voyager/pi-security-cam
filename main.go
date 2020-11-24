@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"image"
 	"image/color"
-	"image/png"
-	"io/ioutil"
+	"image/jpeg"
 	"log"
 	"math"
-	"net/http"
 	"net/smtp"
 	"os"
-	"strings"
 )
 
 func createImage() *image.RGBA {
@@ -20,12 +17,13 @@ func createImage() *image.RGBA {
 }
 
 func saveImage(fileName string, img *image.RGBA) {
-	f, err := os.Create(fileName + ".png")
+	f, err := os.Create(fileName + ".jpg")
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
-	png.Encode(f, img)
+	option := &jpeg.Options{Quality: 75}
+	jpeg.Encode(f, img, option)
 }
 
 func draw(x, y int, img *image.RGBA) {
@@ -37,7 +35,7 @@ func draw(x, y int, img *image.RGBA) {
 func loadImage(fileName string) image.Image {
 	imgFile, _ := os.Open(fileName)
 	defer imgFile.Close()
-	img, _ := png.Decode(imgFile)
+	img, _ := jpeg.Decode(imgFile)
 	return img
 }
 
@@ -89,13 +87,6 @@ func imageDiff(img1, img2 *image.RGBA) (int64, error) {
 	return int64(math.Sqrt(float64(diffSum))), nil
 }
 
-type message struct {
-	size    int64
-	gmailID string
-	date    string // retrieved from message header
-	snippet string
-}
-
 func compareImages() {
 	img1 := createImage()
 	img2 := createImage()
@@ -116,26 +107,6 @@ func compareImages() {
 // newImage := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
 // draw.Draw(newImage, newImage.Bounds(), src, bounds.Min, draw.Src)
 func main() {
-	//sendEmail([]byte("testing"))
 
-	//client := &http.Client{}
-	//msgData := url.Values{}
-	//msgData.Set("Body", "Hello there!")
-
-	//msgDataReader := *strings.NewReader(msgData.Encode())
-	//req, err := http.NewRequest("POST", "http://localhost:3000/upload-image", &msgDataReader)
-	//req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// req.Header.Add("Content-Type", "text/plain")
-	msgbody := strings.NewReader("save my image")
-	resp, _ := http.Post("http://localhost:3000/upload-image", "text/plain", msgbody)
-
-	//f, _ := client.Do(req)
-
-	//msg, _ := ioutil.ReadAll(f.Body)
-	msg, _ := ioutil.ReadAll(resp.Body)
-
-	fmt.Println(string(msg))
+	uploadImage()
 }
