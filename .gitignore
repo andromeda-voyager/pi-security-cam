@@ -9,7 +9,8 @@ log.txt
 config.go
 
 #keys
-serverKey.pem
+*.pem
+*.pub
 
 # IDEs and editors
 /.idea

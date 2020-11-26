@@ -1,112 +1,30 @@
 package main
 
-import (
-	"errors"
-	"fmt"
-	"image"
-	"image/color"
-	"image/jpeg"
-	"log"
-	"math"
-	"net/smtp"
-	"os"
-)
-
-func createImage() *image.RGBA {
-	return image.NewRGBA(image.Rect(0, 0, 100, 100))
-}
-
-func saveImage(fileName string, img *image.RGBA) {
-	f, err := os.Create(fileName + ".jpg")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	option := &jpeg.Options{Quality: 75}
-	jpeg.Encode(f, img, option)
-}
-
-func draw(x, y int, img *image.RGBA) {
-	var col color.Color
-	col = color.RGBA{255, 0, 0, 255}
-	img.Set(x, y, col)
-}
-
-func loadImage(fileName string) image.Image {
-	imgFile, _ := os.Open(fileName)
-	defer imgFile.Close()
-	img, _ := jpeg.Decode(imgFile)
-	return img
-}
-
-func findImageDifferences(img1, img2 *image.RGBA) {
-	for y := 0; y < 100; y++ {
-		for x := img1.Bounds().Min.X; x < img1.Bounds().Max.X; x++ {
-			if (img1.At(x, y)) != img2.At(x, y) {
-				fmt.Println("picture does not match at", x, y)
-			}
-		}
-	}
-}
-
-func drawSquare(img *image.RGBA, c color.Color, x, y, l int) {
-	initX := x
-	for ; y < l; y++ {
-		for x := initX; x < l; x++ {
-			img.Set(x, y, c)
-		}
-	}
-}
-
-func sendEmail(msg []byte) {
-	hostname := "smtp.gmail.com"
-	auth := smtp.PlainAuth("", account,
-		password, hostname)
-
-	err := smtp.SendMail(hostname+":587", auth, from, recipients, msg)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func squareDifference(x, y uint8) uint64 {
-	diff := uint64(x) - uint64(y)
-	return diff * diff
-}
-
-func imageDiff(img1, img2 *image.RGBA) (int64, error) {
-	if img1.Bounds() != img2.Bounds() {
-		return 0, errors.New("images are not the same size")
-	}
-
-	diffSum := int64(0)
-	for i := 0; i < len(img1.Pix); i++ {
-		diffSum += int64(squareDifference(img1.Pix[i], img2.Pix[i]))
-	}
-
-	return int64(math.Sqrt(float64(diffSum))), nil
-}
-
-func compareImages() {
-	img1 := createImage()
-	img2 := createImage()
-
-	draw(0, 0, img1)
-	draw(99, 99, img2)
-
-	var c color.Color
-	c = color.RGBA{255, 0, 0, 255}
-	drawSquare(img1, c, 0, 0, 30)
-	saveImage("image1", img1)
-	saveImage("image2", img2)
-
-	fmt.Println(imageDiff(img1, img2))
-}
-
-// bounds := img.Bounds()
-// newImage := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
-// draw.Draw(newImage, newImage.Bounds(), src, bounds.Min, draw.Src)
 func main() {
+	// uploadImage()
+	// takePicture("pic2")
+	// timeNow := time.Now().UTC()
+	// fmt.Println(timeNow.Format("DateSent>=2006-01-02T15:04:05"))
 
-	uploadImage()
+	// takePicture("pic1")
+	// takePicture("pic2")
+
+	// img1 := loadImage("pic1.jpg")
+	// img2 := loadImage("pic2.jpg")
+	// bounds := img1.Bounds()
+	// newImage := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
+	// idraw.Draw(newImage, newImage.Bounds(), img1, bounds.Min, idraw.Src)
+	// newImage2 := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
+	// idraw.Draw(newImage2, newImage.Bounds(), img2, bounds.Min, idraw.Src)
+
+	// fmt.Println(imageDiff(newImage, newImage2))
+	// averageImages(newImage, newImage2)
+	//rand.Seed(time.Now().UTC().UnixNano())
+	takePicture("snap")
+	//fmt.Println(mediaURL + uploadImage("snap.jpg"))
+	// fmt.Println(uploadImage("snap.jpg"))
+	// sendSMS("test")
+	imageURL := mediaURL + uploadImage("snap.jpg")
+	sendMMS("test2", imageURL)
+
 }
