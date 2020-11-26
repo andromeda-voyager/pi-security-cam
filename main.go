@@ -1,6 +1,13 @@
 package main
 
+import (
+	"math/rand"
+	"time"
+)
+
 func main() {
+	rand.Seed(time.Now().UTC().UnixNano())
+
 	// uploadImage()
 	// takePicture("pic2")
 	// timeNow := time.Now().UTC()
@@ -19,12 +26,5 @@ func main() {
 
 	// fmt.Println(imageDiff(newImage, newImage2))
 	// averageImages(newImage, newImage2)
-	//rand.Seed(time.Now().UTC().UnixNano())
-	takePicture("snap")
-	//fmt.Println(mediaURL + uploadImage("snap.jpg"))
-	// fmt.Println(uploadImage("snap.jpg"))
-	// sendSMS("test")
-	imageURL := mediaURL + uploadImage("snap.jpg")
-	sendMMS("test2", imageURL)
 
 }

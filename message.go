@@ -80,11 +80,41 @@ func sendMMS(message string, imageURL string) {
 	}
 }
 
+// MessagesResponse used by getMessages to populate json fields
+type MessagesResponse struct {
+	Body      string    `json:"body"`
+	FirstPage string    `json:"first_page_uri"`
+	NextPage  string    `json:"next_page_uri"`
+	Page      int       `json:"page"`
+	PageSize  int       `json:"page_size"`
+	Messages  []Message `json:"messages"`
+}
+
+// Message used by getMessages to populate json fields
+type Message struct {
+	Body        string `json:"body"`
+	DateCreated string `json:"date_created"`
+	DateSent    string `json:"date_sent"`
+	From        int    `json:"from"`
+}
+
 func getMessages() {
-	timeNow := time.Now()
-	fmt.Println(timeNow.Format("DateSent>=2006-01-02 15:04:05-0700"))
-	getMessagesURL := twilioURL + "?DateSent%3C=2019-03-01&PageSize=20&From=" + personalNumber
-	resp, _ := httpClient.Get(getMessagesURL)
+
+	var response MessagesResponse
+	timeNow := time.Now().UTC()
+	//dateSent := timeNow.Format("DateSent>=2006-01-02T15:04:05")
+	dateSent := timeNow.Format("DateSent>=2006-01-02")
+
+	getMessagesURL := twilioURL + "?" + dateSent + "&PageSize=20&From=" + personalNumber
+
+	req, _ := http.NewRequest("GET", getMessagesURL, nil)
+	req.SetBasicAuth(accountSid, authToken)
+	resp, _ := httpClient.Do(req)
+
 	b, _ := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(b, &response)
+
 	fmt.Println(string(b))
+	c := response.Messages[0].Body
+	processCommand(c)
 }

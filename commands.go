@@ -13,5 +13,6 @@ func processCommand(c string) {
 
 func sendPicture() {
 	takePicture("snap")
-	uploadImage("snap.jpg")
+	imageURL := mediaURL + uploadImage("snap.jpg")
+	sendMMS("test2", imageURL)
 }
