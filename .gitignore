@@ -5,6 +5,9 @@ log.txt
 *.png
 *.jpg
 
+#executable
+piSecurityCam
+
 #config
 config.go
 

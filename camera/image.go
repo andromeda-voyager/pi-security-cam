@@ -1,25 +1,24 @@
-package main
+package camera
 
 import (
 	"errors"
 	"fmt"
 	"image"
 	"image/color"
+	"image/draw"
 	"image/jpeg"
 	"math"
 	"os"
 )
 
-// bounds := img.Bounds()
-// newImage := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
-// draw.Draw(newImage, newImage.Bounds(), src, bounds.Min, draw.Src)
+const imagesDirectory = "images/"
 
 func createImage() *image.RGBA {
 	return image.NewRGBA(image.Rect(0, 0, 100, 100))
 }
 
 func saveImage(fileName string, img *image.RGBA) {
-	f, err := os.Create(fileName + ".jpg")
+	f, err := os.Create(imagesDirectory + fileName + ".jpg")
 	if err != nil {
 		panic(err)
 	}
@@ -28,17 +27,21 @@ func saveImage(fileName string, img *image.RGBA) {
 	jpeg.Encode(f, img, option)
 }
 
-func draw(x, y int, img *image.RGBA) {
+func colorPixel(x, y int, img *image.RGBA) {
 	var col color.Color
 	col = color.RGBA{255, 0, 0, 255}
 	img.Set(x, y, col)
 }
 
-func loadImage(fileName string) image.Image {
-	imgFile, _ := os.Open(fileName)
+// LoadImage loads an image from a file and returns it in RGBA format
+func LoadImage(fileName string) *image.RGBA {
+	imgFile, _ := os.Open(imagesDirectory + fileName + ".jpg")
 	defer imgFile.Close()
 	img, _ := jpeg.Decode(imgFile)
-	return img
+	bounds := img.Bounds()
+	rgbaImage := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
+	draw.Draw(rgbaImage, rgbaImage.Bounds(), img, bounds.Min, draw.Src)
+	return rgbaImage
 }
 
 func findImageDifferences(img1, img2 *image.RGBA) {
@@ -74,7 +77,7 @@ func squareDifference(x, y uint8) uint64 {
 	return diff * diff
 }
 
-func imageDiff(img1, img2 *image.RGBA) (int64, error) {
+func getDiffValue(img1, img2 *image.RGBA) (int64, error) {
 	if img1.Bounds() != img2.Bounds() {
 		return 0, errors.New("images are not the same size")
 	}
@@ -84,21 +87,6 @@ func imageDiff(img1, img2 *image.RGBA) (int64, error) {
 		diffSum += int64(squareDifference(img1.Pix[i], img2.Pix[i]))
 	}
 
+	fmt.Println(int64(math.Sqrt(float64(diffSum))))
 	return int64(math.Sqrt(float64(diffSum))), nil
-}
-
-func compareImages() {
-	img1 := createImage()
-	img2 := createImage()
-
-	draw(0, 0, img1)
-	draw(99, 99, img2)
-
-	var c color.Color
-	c = color.RGBA{255, 0, 0, 255}
-	drawSquare(img1, c, 0, 0, 30)
-	saveImage("image1", img1)
-	saveImage("image2", img2)
-
-	fmt.Println(imageDiff(img1, img2))
 }

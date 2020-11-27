@@ -1,15 +1,15 @@
-package main
+package server
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"image/jpeg"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
+	"piSecurityCam/camera"
 	"time"
 )
 
@@ -24,16 +24,18 @@ var httpClient = &http.Client{
 	Timeout: time.Second * 10,
 }
 
-func uploadImage(f string) string {
+// UploadImage uploads an image to the provided url
+func UploadImage(i, url string) string {
 	imageName := randString(15)
-	file, _ := os.Open(f)
-	reader := bufio.NewReader(file)
-	b, _ := ioutil.ReadAll(reader)
+	image := camera.LoadImage(i)
+	buf := new(bytes.Buffer)
+	err := jpeg.Encode(buf, image, nil)
+	b := buf.Bytes()
 	imageStr := base64.StdEncoding.EncodeToString(b)
 	imageUpload := &ImageUpload{imageStr, imageName, sign(imageName)}
 	fmt.Println("in: " + imageName)
 	j, _ := json.Marshal(imageUpload)
-	resp, err := httpClient.Post(mediaURL+"upload-image", "application/json", bytes.NewBuffer(j))
+	resp, err := httpClient.Post(url, "application/json", bytes.NewBuffer(j))
 	if err != nil {
 		log.Printf("Start command error: %v", err)
 	}
@@ -41,6 +43,14 @@ func uploadImage(f string) string {
 	fmt.Println(string(respB))
 	return string(respB)
 }
+
+//loaded from file implementation
+// imageName := randString(15)
+// 	file, _ := os.Open(f)
+// 	reader := bufio.NewReader(file)
+// 	b, _ := ioutil.ReadAll(reader)
+// 	imageStr := base64.StdEncoding.EncodeToString(b)
+// 	imageUpload := &ImageUpload{imageStr, imageName, sign(imageName)}
 
 // func uploadImage2(image *image.RGBA) {
 // 	msg := randString(15)
