@@ -2,44 +2,39 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"piSecurityCam/camera"
-	"piSecurityCam/server"
 	"strings"
 	"time"
 )
 
 func processCommand(c string) {
+	fmt.Println("processing command :" + c + ":")
 	switch strings.ToLower(c) {
 	case "on":
-		camera.TurnCameraOff()
-	case "off":
 		camera.TurnCameraOn()
+	case "off":
+		camera.TurnCameraOff()
 	case "snap":
 		sendPicture()
 	case "status":
 		sendSMS(camera.Status())
-	case "help":
-		sendSMS(help())
+	// case "":
+	// 	sendSMS(help())
 	case "": //getCommands returns empty string if there are no new sms commands
 	default:
-		sendSMS("Command not found." + help())
+		sendSMS("Command not found.\n" + help())
 	}
 }
 
 func help() string {
 	return `Commands:
-		\non :Turns the camera on.
-		\noff : Turns the camera off
-		\nsnap : Takes a picture and sends it to you
-		\nstatus : Sends the state of the camera.`
-}
-
-func sendPicture() {
-	camera.TakePicture("snap")
-	imageURL := mediaURL + server.UploadImage("snap", mediaURL)
-	sendMMS("test2", imageURL)
+		on :Turns the camera on.
+		off : Turns the camera off.
+		snap : Take a picture.
+		status : Get the camera status.`
 }
 
 // MessagesResponse used by getMessages to populate json fields
@@ -60,7 +55,7 @@ type Message struct {
 	From        int    `json:"from"`
 }
 
-var lastUpdateTime string
+var lastMsgReceivedTime string
 var httpClient = &http.Client{
 	Timeout: time.Second * 10,
 }
@@ -72,7 +67,7 @@ func CheckForCommands() {
 
 func getCommand() string {
 	var response MessagesResponse
-	getMessagesURL := twilioURL + "?" + getLastUpdateTime() + "&PageSize=20&From=" + personalNumber
+	getMessagesURL := twilioURL + "?" + getLastUpdateTime() + "&PageSize=5&From=" + personalNumber
 	req, _ := http.NewRequest("GET", getMessagesURL, nil)
 	req.SetBasicAuth(accountSid, authToken)
 	resp, _ := httpClient.Do(req)
@@ -86,13 +81,13 @@ func getCommand() string {
 }
 
 func getLastUpdateTime() string {
-	defer resetLastUpdateTime()
-	if len(lastUpdateTime) == 0 {
-		resetLastUpdateTime()
+	defer updateLastMsgReceivedTime()
+	if len(lastMsgReceivedTime) == 0 {
+		updateLastMsgReceivedTime()
 	}
-	return lastUpdateTime
+	return lastMsgReceivedTime
 }
 
-func resetLastUpdateTime() {
-	lastUpdateTime = time.Now().UTC().Format("DateSent>=2006-01-02T15:04:05")
+func updateLastMsgReceivedTime() {
+	lastMsgReceivedTime = time.Now().UTC().Format("DateSent>=2006-01-02T15:04:05")
 }

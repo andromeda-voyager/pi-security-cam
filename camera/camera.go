@@ -10,7 +10,11 @@ import (
 const maxDifference = 20000
 
 var referenceImg *image.RGBA
-var isCameraOn = false
+var isCameraOn bool
+
+func init() {
+	isCameraOn = false
+}
 
 // TakePicture Takes a pictures with the camera and saves it to a file
 func TakePicture(fileName string) {
@@ -35,12 +39,12 @@ func IsMotionDetected() bool {
 	TakePicture("capture")
 	img := LoadImage("capture")
 	imageDifference, err := getDiffValue(img, referenceImg)
+	fmt.Println("image diff:", imageDifference)
 	if err != nil {
 		fmt.Println("An error occured getting image differences.")
 		return false
 	}
 	if imageDifference > maxDifference {
-		fmt.Println(imageDifference)
 		return true
 	}
 	return false

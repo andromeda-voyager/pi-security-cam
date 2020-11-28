@@ -86,7 +86,5 @@ func getDiffValue(img1, img2 *image.RGBA) (int64, error) {
 	for i := 0; i < len(img1.Pix); i++ {
 		diffSum += int64(squareDifference(img1.Pix[i], img2.Pix[i]))
 	}
-
-	fmt.Println(int64(math.Sqrt(float64(diffSum))))
 	return int64(math.Sqrt(float64(diffSum))), nil
 }

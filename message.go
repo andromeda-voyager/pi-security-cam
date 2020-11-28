@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/smtp"
 	"net/url"
+	"piSecurityCam/camera"
+	"piSecurityCam/server"
 	"strings"
 )
 
@@ -19,6 +21,12 @@ func sendEmail(msg []byte) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func sendPicture() {
+	camera.TakePicture("snap")
+	imageURL := serverURL + server.UploadImage("snap", uploadURL)
+	sendMMS("Security Breach! Motion detected.", imageURL)
 }
 
 func sendSMS(message string) {
@@ -43,7 +51,6 @@ func sendSMS(message string) {
 		if err == nil {
 			fmt.Println(data["sid"])
 		}
-
 	} else {
 		fmt.Println(resp.Status)
 	}

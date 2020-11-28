@@ -7,15 +7,15 @@ import (
 )
 
 func main() {
-	camera.TurnCameraOn()
+
 	for {
 		time.Sleep(5 * time.Second)
+		CheckForCommands()
 		if camera.IsMotionDetected() { // no motion is detected if camera is off
 			fmt.Println("motion detected")
 			sendPicture()
 		}
 	}
-
-	//camera.TakePicture("new")
-
+	// camera.TakePicture("test")
+	// server.UploadImage("test", mediaURL)
 }

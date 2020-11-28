@@ -9,15 +9,20 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"io/ioutil"
-	mrand "math/rand"
+	"math/rand"
+	"time"
 )
 
 const charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+func init() {
+	rand.Seed(time.Now().UTC().UnixNano())
+}
+
 func randString(n int) string {
 	b := make([]byte, n)
 	for i := range b {
-		b[i] = charSet[mrand.Intn(len(charSet))]
+		b[i] = charSet[rand.Intn(len(charSet))]
 	}
 	return string(b)
 }
