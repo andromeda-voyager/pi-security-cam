@@ -9,7 +9,7 @@ log.txt
 piSecurityCam
 
 #config
-config.go
+*.ini
 
 #keys
 *.pem

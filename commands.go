@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"piSecurityCam/camera"
+	"piSecurityCam/config"
+	"piSecurityCam/message"
 	"strings"
 	"time"
 )
@@ -18,14 +20,14 @@ func processCommand(c string) {
 	case "off":
 		camera.TurnCameraOff()
 	case "snap":
-		sendPicture()
+		message.SendPicture()
 	case "status":
-		sendSMS(camera.Status())
+		message.SendSMS(camera.Status())
 	// case "":
 	// 	sendSMS(help())
 	case "": //getCommands returns empty string if there are no new sms commands
 	default:
-		sendSMS("Command not found.\n" + help())
+		message.SendSMS("Command not found.\n" + help())
 	}
 }
 
@@ -67,9 +69,9 @@ func CheckForCommands() {
 
 func getCommand() string {
 	var response MessagesResponse
-	getMessagesURL := twilioURL + "?" + getLastUpdateTime() + "&PageSize=5&From=" + personalNumber
+	getMessagesURL := config.TwilioURL() + "?" + getLastUpdateTime() + "&PageSize=5&From=" + config.PersonalNumber()
 	req, _ := http.NewRequest("GET", getMessagesURL, nil)
-	req.SetBasicAuth(accountSid, authToken)
+	req.SetBasicAuth(config.AccountSid(), config.AuthToken())
 	resp, _ := httpClient.Do(req)
 
 	b, _ := ioutil.ReadAll(resp.Body)

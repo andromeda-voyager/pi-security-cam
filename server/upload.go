@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
@@ -9,7 +10,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"piSecurityCam/camera"
+	"piSecurityCam/config"
 	"time"
 )
 
@@ -25,7 +28,7 @@ var httpClient = &http.Client{
 }
 
 // UploadImage uploads an image to the provided url
-func UploadImage(i, url string) string {
+func UploadImage(i string) string {
 	imageName := randString(15)
 	image := camera.LoadImage(i)
 	buf := new(bytes.Buffer)
@@ -33,9 +36,8 @@ func UploadImage(i, url string) string {
 	b := buf.Bytes()
 	imageStr := base64.StdEncoding.EncodeToString(b)
 	imageUpload := &ImageUpload{imageStr, imageName, sign(imageName)}
-	fmt.Println("in: " + imageName)
 	j, _ := json.Marshal(imageUpload)
-	resp, err := httpClient.Post(url, "application/json", bytes.NewBuffer(j))
+	resp, err := httpClient.Post(config.UploadURL(), "application/json", bytes.NewBuffer(j))
 	if err != nil {
 		log.Printf("Start command error: %v", err)
 	}
@@ -44,23 +46,20 @@ func UploadImage(i, url string) string {
 	return string(respB)
 }
 
-//loaded from file implementation
-// imageName := randString(15)
-// 	file, _ := os.Open(f)
-// 	reader := bufio.NewReader(file)
-// 	b, _ := ioutil.ReadAll(reader)
-// 	imageStr := base64.StdEncoding.EncodeToString(b)
-// 	imageUpload := &ImageUpload{imageStr, imageName, sign(imageName)}
-
-// func uploadImage2(image *image.RGBA) {
-// 	msg := randString(15)
-// 	buf := new(bytes.Buffer)
-// 	err := jpeg.Encode(buf, image, nil)
-// 	b := buf.Bytes()
-// 	imageStr := base64.StdEncoding.EncodeToString(b)
-// 	imageUpload := &ImageUpload{imageStr, msg, sign(msg)}
-// 	j, _ := json.Marshal(imageUpload)
-// 	resp, _ := httpClient.Post("http://localhost:3000/upload-image", "application/json", bytes.NewBuffer(j))
-// 	respB, _ := ioutil.ReadAll(resp.Body)
-// 	fmt.Println(string(respB))
-// }
+// UploadImageFromFile loads an image saved locally and uploads it to the provided url
+func UploadImageFromFile(fileName string) string {
+	imageName := randString(15)
+	file, _ := os.Open(fileName + ".jpg")
+	reader := bufio.NewReader(file)
+	b, _ := ioutil.ReadAll(reader)
+	imageStr := base64.StdEncoding.EncodeToString(b)
+	imageUpload := &ImageUpload{imageStr, imageName, sign(imageName)}
+	j, _ := json.Marshal(imageUpload)
+	resp, err := httpClient.Post(config.UploadURL(), "application/json", bytes.NewBuffer(j))
+	if err != nil {
+		log.Printf("Start command error: %v", err)
+	}
+	respB, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(respB))
+	return string(respB)
+}
