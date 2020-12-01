@@ -5,9 +5,8 @@ import (
 	"image"
 	"log"
 	"os/exec"
+	"piSecurityCam/config"
 )
-
-const maxDifference = 20000
 
 var referenceImg *image.RGBA
 var isCameraOn bool
@@ -44,7 +43,7 @@ func IsMotionDetected() bool {
 		fmt.Println("An error occured getting image differences.")
 		return false
 	}
-	if imageDifference > maxDifference {
+	if imageDifference > config.MaxImageDifference() {
 		return true
 	}
 	return false

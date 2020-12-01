@@ -11,7 +11,13 @@ var (
 	personalNumber,
 	uploadURL,
 	serverURL string
+	maxImageDifference int64
 )
+
+// MaxImageDifference .
+func MaxImageDifference() int64 {
+	return maxImageDifference
+}
 
 // EmailAccount .
 func EmailAccount() string {

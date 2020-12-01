@@ -2,17 +2,20 @@ package config
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
 func init() {
-	read()
+	loadSettings()
 }
 
 func setValue(setting, value string) {
+	var err error
 	switch setting {
 	case "email_account":
 		emailAccount = value
@@ -28,15 +31,23 @@ func setValue(setting, value string) {
 		uploadURL = value
 	case "server_url":
 		serverURL = value
+	case "max_image_difference":
+		maxImageDifference, err = strconv.ParseInt(value, 10, 64)
+		if err != nil {
+			fmt.Println("Unable to load the max_image_difference value in settings.ini. Please change this value to an integer value.")
+			os.Exit(0)
+		}
 	}
 }
 
 // Read the config file
-func read() {
+func loadSettings() {
 
-	configFile, err := os.Open("settings.ini") // For read access.
-	if err != nil {
-		log.Fatal("Unable to open settings.ini", err)
+	configFile, err := os.Open("settings.ini")
+	for err != nil {
+		fmt.Println("Settings.ini not found.")
+		createSettingsFile()
+		configFile, err = os.Open("settings.ini")
 	}
 
 	bufferedReader := bufio.NewReader(configFile)
