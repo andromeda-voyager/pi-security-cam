@@ -21,11 +21,12 @@ var settings = []setting{
 	setting{"personal number", "personal_number"},
 	setting{"upload url", "upload_url"},
 	setting{"server url", "server_url"},
+	setting{"max image difference", "max_image_difference"},
 }
 
-func createSettingsFile() {
+func writeSettingsFile() {
 
-	fmt.Println("Initializing the settings.ini file. Please enter a value for each setting.")
+	fmt.Println("Creating settings.ini file. Please enter a value for each setting.")
 	var fileText string
 	scanner := bufio.NewScanner(os.Stdin)
 	for _, s := range settings {
@@ -33,7 +34,7 @@ func createSettingsFile() {
 		scanner.Scan()
 		fileText += s.iniText + " = " + scanner.Text() + "\n"
 	}
-	err := ioutil.WriteFile("test.ini", []byte(fileText), 0600)
+	err := ioutil.WriteFile("settings.ini", []byte(fileText), 0600)
 	if err != nil {
 		fmt.Println("Unable to create file")
 	}

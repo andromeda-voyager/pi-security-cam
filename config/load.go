@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	loadSettings()
+	load()
 }
 
 func setValue(setting, value string) {
@@ -41,12 +41,12 @@ func setValue(setting, value string) {
 }
 
 // Read the config file
-func loadSettings() {
+func load() {
 
 	configFile, err := os.Open("settings.ini")
 	for err != nil {
 		fmt.Println("Settings.ini not found.")
-		createSettingsFile()
+		writeSettingsFile()
 		configFile, err = os.Open("settings.ini")
 	}
 

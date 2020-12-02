@@ -1,8 +1,7 @@
-package main
+package control
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"piSecurityCam/camera"
@@ -13,7 +12,6 @@ import (
 )
 
 func processCommand(c string) {
-	fmt.Println("processing command :" + c + ":")
 	switch strings.ToLower(c) {
 	case "on":
 		camera.TurnCameraOn()
@@ -23,8 +21,6 @@ func processCommand(c string) {
 		message.SendPicture()
 	case "status":
 		message.SendSMS(camera.Status())
-	// case "":
-	// 	sendSMS(help())
 	case "": //getCommands returns empty string if there are no new sms commands
 	default:
 		message.SendSMS("Command not found.\n" + help())
@@ -57,7 +53,7 @@ type Message struct {
 	From        int    `json:"from"`
 }
 
-var lastMsgReceivedTime string
+var lastUpdateTime string
 var httpClient = &http.Client{
 	Timeout: time.Second * 10,
 }
@@ -69,7 +65,7 @@ func CheckForCommands() {
 
 func getCommand() string {
 	var response MessagesResponse
-	getMessagesURL := config.TwilioURL() + "?" + getLastUpdateTime() + "&PageSize=5&From=" + config.PersonalNumber()
+	getMessagesURL := config.TwilioURL() + "?DateSent>=" + getLastUpdateTime() + "&PageSize=5&From=" + config.PersonalNumber()
 	req, _ := http.NewRequest("GET", getMessagesURL, nil)
 	req.SetBasicAuth(config.AccountSid(), config.AuthToken())
 	resp, _ := httpClient.Do(req)
@@ -83,13 +79,13 @@ func getCommand() string {
 }
 
 func getLastUpdateTime() string {
-	defer updateLastMsgReceivedTime()
-	if len(lastMsgReceivedTime) == 0 {
-		updateLastMsgReceivedTime()
+	defer setLastUpdateTime()
+	if len(lastUpdateTime) == 0 {
+		setLastUpdateTime()
 	}
-	return lastMsgReceivedTime
+	return lastUpdateTime
 }
 
-func updateLastMsgReceivedTime() {
-	lastMsgReceivedTime = time.Now().UTC().Format("DateSent>=2006-01-02T15:04:05")
+func setLastUpdateTime() {
+	lastUpdateTime = time.Now().UTC().Format("2006-01-02T15:04:05")
 }
