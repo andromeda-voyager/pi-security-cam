@@ -16,22 +16,16 @@ var lastReferenceUpdate time.Time
 
 func init() {
 	isCameraOn = false
-	var lastUpdateTime = time.Now().UTC()
-	var lastUpdateTime2 = time.Now().UTC()
-	if updateInterval > lastUpdateTime2.Sub(lastUpdateTime) {
-		fmt.Println(lastUpdateTime2.Sub(lastUpdateTime))
-	}
-
 }
 
-var lastUpdateTime = time.Now().UTC()
-
 func updateReferenceImage() {
-	if time.Now().UTC().Sub(lastReferenceUpdate) > updateInterval {
+	timeNow := time.Now().UTC()
+	if timeNow.Sub(lastReferenceUpdate) > updateInterval {
 		TakePicture("reference")
 		img := LoadImage("reference")
 		averageImages(referenceImg, img)
 		fmt.Println("reference image updated")
+		lastReferenceUpdate = timeNow
 	}
 }
 
@@ -83,6 +77,7 @@ func TurnCameraOn() {
 	isCameraOn = true
 	TakePicture("reference")
 	referenceImg = LoadImage("reference")
+	lastReferenceUpdate = time.Now().UTC()
 }
 
 // TurnCameraOff Sets the state of the camera to off and images are no longer taken
