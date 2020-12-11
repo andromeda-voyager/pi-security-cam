@@ -54,13 +54,13 @@ func findImageDifferences(img1, img2 *image.RGBA) {
 	}
 }
 
+// Averages the pixels from two images. img1 is changed and is the average of both images.
 func averageImages(img1, img2 *image.RGBA) {
-	bounds := img1.Bounds()
-	avgImg := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
+	// bounds := img1.Bounds()
+	// avgImg := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
 	for i := 0; i < len(img1.Pix); i++ {
-		avgImg.Pix[i] = uint8((uint16(img1.Pix[i]) + uint16(img2.Pix[i])) / 2)
+		img1.Pix[i] = uint8((uint16(img1.Pix[i]) + uint16(img2.Pix[i])) / 2)
 	}
-	saveImage("avg.jpg", avgImg)
 }
 
 func drawSquare(img *image.RGBA, c color.Color, x, y, l int) {

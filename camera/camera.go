@@ -6,13 +6,33 @@ import (
 	"log"
 	"os/exec"
 	"piSecurityCam/config"
+	"time"
 )
 
 var referenceImg *image.RGBA
 var isCameraOn bool
+var updateInterval = 45 * time.Second
+var lastReferenceUpdate time.Time
 
 func init() {
 	isCameraOn = false
+	var lastUpdateTime = time.Now().UTC()
+	var lastUpdateTime2 = time.Now().UTC()
+	if updateInterval > lastUpdateTime2.Sub(lastUpdateTime) {
+		fmt.Println(lastUpdateTime2.Sub(lastUpdateTime))
+	}
+
+}
+
+var lastUpdateTime = time.Now().UTC()
+
+func updateReferenceImage() {
+	if time.Now().UTC().Sub(lastReferenceUpdate) > updateInterval {
+		TakePicture("reference")
+		img := LoadImage("reference")
+		averageImages(referenceImg, img)
+		fmt.Println("reference image updated")
+	}
 }
 
 // TakePicture Takes a pictures with the camera and saves it to a file
@@ -35,6 +55,7 @@ func IsMotionDetected() bool {
 	if !isCameraOn {
 		return false
 	}
+	updateReferenceImage()
 	TakePicture("capture")
 	img := LoadImage("capture")
 	imageDifference, err := getDiffValue(img, referenceImg)

@@ -40,7 +40,7 @@ func setValue(setting, value string) {
 	}
 }
 
-// Read the config file
+// Read the settings.ini file and set the values in config.go
 func load() {
 
 	configFile, err := os.Open("settings.ini")
