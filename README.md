@@ -10,7 +10,7 @@ Create a private and public key file.
 ```bash
 openssl genrsa -out uploadKey.pem 4096 && openssl rsa -in uploadKey.pem -pubout > uploadKey.pub
 ```
-Place uploadKey.pub in the keys folder.
+Place uploadKey.pem in the root project folder.
 
 ### Run
 ```bash
