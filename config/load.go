@@ -61,15 +61,18 @@ func load() {
 		}
 
 		lineNumber++
-		if !(strings.HasPrefix(fileLine, "#") || strings.TrimSpace(fileLine) == "") {
+		if !isCommentOrEmpty(strings.TrimSpace(fileLine)) {
 			field := strings.Split(fileLine, "=")
 			if len(field) < 2 {
 				log.Fatalf("Configuration file is corrupt on line %v", lineNumber)
 			}
-
 			setting := strings.TrimSpace(field[0])
 			value := strings.TrimSpace(field[1])
 			setValue(setting, value)
 		}
 	}
+}
+
+func isCommentOrEmpty(line string) bool {
+	return (strings.HasPrefix(line, "#") || strings.HasPrefix(line, ";") || line == "")
 }

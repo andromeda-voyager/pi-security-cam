@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"image"
 	"log"
+	"os"
 	"os/exec"
-	"piSecurityCam/config"
+	"pi-security-cam/config"
 	"time"
 )
 
@@ -32,8 +33,13 @@ func updateReferenceImage() {
 // TakePicture Takes a pictures with the camera and saves it to a file
 func TakePicture(fileName string) {
 	//raspistill -t 2000 -o image.jpg -w 640 -h 480
-	//	cmd := exec.Command("touch", "test.jpg")
-	cmd := exec.Command("fswebcam", "--skip", "50", "-r", "640x480", "--no-banner", imagesDirectory+fileName+".jpg")
+	var cmd *exec.Cmd
+	if os.Getenv("device") == "raspi" {
+		cmd = exec.Command("raspistill", "-n", "-o", imagesDirectory+fileName+".jpg", "-w", "640", "-h", "480")
+	} else {
+		cmd = exec.Command("fswebcam", "--skip", "50", "-r", "640x480", "--no-banner", imagesDirectory+fileName+".jpg")
+
+	}
 	err := cmd.Start()
 	if err != nil {
 		log.Printf("Start command error: %v", err)

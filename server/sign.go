@@ -28,7 +28,7 @@ func randString(n int) string {
 }
 
 func sign(msg string) string {
-	key, _ := ioutil.ReadFile("serverKey.pem")
+	key, _ := ioutil.ReadFile("uploadKey.pem")
 	block, _ := pem.Decode(key)
 	privateKey, _ := x509.ParsePKCS1PrivateKey(block.Bytes)
 	rng := crand.Reader

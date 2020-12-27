@@ -3,7 +3,7 @@ package message
 import (
 	"log"
 	"net/smtp"
-	"piSecurityCam/config"
+	"pi-security-cam/config"
 )
 
 func sendEmail(msg []byte) {

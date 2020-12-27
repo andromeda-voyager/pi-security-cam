@@ -11,8 +11,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"piSecurityCam/camera"
-	"piSecurityCam/config"
+	"pi-security-cam/camera"
+	"pi-security-cam/config"
 	"time"
 )
 

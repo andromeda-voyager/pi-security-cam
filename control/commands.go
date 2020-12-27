@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"piSecurityCam/camera"
-	"piSecurityCam/config"
-	"piSecurityCam/message"
+	"pi-security-cam/camera"
+	"pi-security-cam/config"
+	"pi-security-cam/message"
 	"strings"
 	"time"
 )

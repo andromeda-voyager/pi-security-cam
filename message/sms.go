@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"piSecurityCam/camera"
-	"piSecurityCam/config"
-	"piSecurityCam/server"
+	"pi-security-cam/camera"
+	"pi-security-cam/config"
+	"pi-security-cam/server"
 	"strings"
 )
 
@@ -15,6 +15,7 @@ import (
 func SendPicture() {
 	camera.TakePicture("snap")
 	imageURL := config.ServerURL() + server.UploadImage("snap")
+	fmt.Println(imageURL)
 	SendMMS("Security Breach! Motion detected.", imageURL)
 }
 
