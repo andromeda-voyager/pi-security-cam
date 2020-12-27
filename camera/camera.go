@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"image"
 	"log"
-	"os"
 	"os/exec"
 	"pi-security-cam/config"
+	"runtime"
 	"time"
 )
 
@@ -34,7 +34,7 @@ func updateReferenceImage() {
 func TakePicture(fileName string) {
 	//raspistill -t 2000 -o image.jpg -w 640 -h 480
 	var cmd *exec.Cmd
-	if os.Getenv("device") == "raspi" {
+	if runtime.GOARCH == "arm" {
 		cmd = exec.Command("raspistill", "-n", "-o", imagesDirectory+fileName+".jpg", "-w", "640", "-h", "480")
 	} else {
 		cmd = exec.Command("fswebcam", "--skip", "50", "-r", "640x480", "--no-banner", imagesDirectory+fileName+".jpg")

@@ -1,25 +1,17 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"os"
 	"pi-security-cam/camera"
 	"pi-security-cam/control"
 	"pi-security-cam/message"
+	"runtime"
 	"time"
 )
 
 func main() {
 
-	isDev := flag.Bool("raspi", false, "bool value for running on raspberrypi")
-	flag.Parse()
-	if *isDev {
-		os.Setenv("device", "raspi")
-	} else {
-		os.Setenv("device", "unknown")
-	}
-	fmt.Println("Pi Security Cam Started. Running on", os.Getenv("device"))
+	fmt.Print("Pi Security Cam Started. Running on ", runtime.GOOS, " ", runtime.GOARCH, ".")
 	for {
 		time.Sleep(5 * time.Second)
 		control.CheckForCommands()
